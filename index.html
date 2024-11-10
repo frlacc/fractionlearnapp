@@ -77,11 +77,11 @@
       font-size: 1.5em;
     }
     
-    /* Увеличиваем шрифт для знаков операций и вопросительного знака */
+    /* Убираем жирное выделение для знаков операций и вопросительного знака */
     .operation, .question-mark {
       font-size: 2em;
-      font-weight: bold;
       vertical-align: middle;
+      font-weight: normal;
     }
 
   </style>
@@ -222,13 +222,13 @@
       correctAnswer = fractionToMixed(resultNum, resultDen);
 
       // Форматирование отображения вопросов с возможными смешанными числами
-      let questionText = `${formatFraction(num1, den1)} <span class="operation">${currentOperation}</span> ${formatFraction(num2, den2)} <span class="question-mark">?</span>`;
+      let questionText = `${formatFraction(num1, den1)} <span class="operation">${currentOperation}</span> ${formatFraction(num2, den2)} <span class="question-mark">= ?</span>`;
 
       if (isMixed1) {
-        questionText = `${formatMixedNumber(Math.floor(num1 / den1), num1 % den1, den1)} <span class="operation">${currentOperation}</span> ${formatFraction(num2, den2)} <span class="question-mark">?</span>`;
+        questionText = `${formatMixedNumber(Math.floor(num1 / den1), num1 % den1, den1)} <span class="operation">${currentOperation}</span> ${formatFraction(num2, den2)} <span class="question-mark">= ?</span>`;
       }
       if (isMixed2) {
-        questionText = `${formatFraction(num1, den1)} <span class="operation">${currentOperation}</span> ${formatMixedNumber(Math.floor(num2 / den2), num2 % den2, den2)} <span class="question-mark">?</span>`;
+        questionText = `${formatFraction(num1, den1)} <span class="operation">${currentOperation}</span> ${formatMixedNumber(Math.floor(num2 / den2), num2 % den2, den2)} <span class="question-mark">= ?</span>`;
       }
 
       document.getElementById("question").innerHTML = questionText;
