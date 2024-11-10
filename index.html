@@ -66,6 +66,17 @@
       justify-content: center;
       align-items: center;
     }
+
+    /* Увеличиваем шрифт для MathML */
+    math {
+      font-size: 2em;
+    }
+    mfrac {
+      font-size: 1.5em;
+    }
+    mn {
+      font-size: 1.5em;
+    }
   </style>
 </head>
 <body>
@@ -212,9 +223,8 @@
       if (isMixed2) {
         questionText = `${formatFraction(num1, den1)} ${currentOperation} ${formatMixedNumber(Math.floor(num2 / den2), num2 % den2, den2)} = ?`;
       }
-
+      
       document.getElementById("question").innerHTML = questionText;
-      document.getElementById("resultMessage").innerText = "";
     }
 
     function checkAnswer() {
@@ -242,4 +252,3 @@
   </script>
 </body>
 </html>
-
