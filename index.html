@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Учимся работать с дробями и смешанными числами</title>
+  <!-- Подключаем Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+    }
+    .app-container {
+      max-width: 500px;
+      padding: 20px;
+      margin: 0 auto;
+      background-color: white;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+    .fraction-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+    .fraction-container input {
+      font-size: 1.5em;
+      text-align: center;
+      margin: 0;
+    }
+    .fraction-container .numerator {
+      position: absolute;
+      top: -15px;
+    }
+    .fraction-container .denominator {
+      position: absolute;
+      bottom: -15px;
+    }
+    .score {
+      font-size: 1.2em;
+      font-weight: bold;
+      margin-top: 15px;
+      color: #333;
+    }
+    .theory {
+      font-size: 0.9em;
+      margin-top: 15px;
+      color: #555;
+    }
+    .input-container {
+      margin-top: 20px;
+    }
+    .input-container input {
+      margin: 5px;
+    }
+    .input-container .whole-part {
+      width: 70px;
+    }
+    .input-container .fraction {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <h1 class="text-center">Учимся работать с дробями</h1>
+    <p class="text-center">Решите пример:</p>
+    <div id="question" class="text-center"></div>
+    
+    <div class="input-container d-flex justify-content-center">
+      <input type="number" id="wholeInput" class="form-control whole-part" placeholder="Целая часть">
+      <div class="fraction-container">
+        <input type="number" id="numeratorInput" class="form-control" placeholder="Числитель">
+        <input type="number" id="denominatorInput" class="form-control" placeholder="Знаменатель">
+      </div>
+    </div>
+
+    <div class="text-center mt-3">
+      <button class="btn btn-primary" onclick="checkAnswer()">Проверить</button>
+    </div>
+
+    <p id="resultMessage" class="text-center mt-3"></p>
+    <p class="score text-center">Ваши очки: <span id="score">0</span></p>
+
+    <div class="text-center mt-3">
+      <button class="btn btn-secondary" onclick="generateQuestion()">Следующий пример</button>
+    </div>
+
+    <div class="theory mt-4">
+      <h2>Теория</h2>
+      <p id="theoryText"></p>
+    </div>
+  </div>
+
+  <!-- Подключаем Bootstrap JS и Popper.js -->
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+  <script>
+    let num1, den1, num2, den2, correctAnswer, currentOperation;
+    let score = 0;
+    let answered = false;
+
+    function getRandomInteger(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function simplifyFraction(numerator, denominator) {
+      function gcd(a, b) {
+        return b === 0 ? a : gcd(b, a % b);
+      }
+      const divisor = gcd(numerator, denominator);
+      return [numerator / divisor, denominator / divisor];
+    }
+
+    function fractionToMixed(numerator, denominator) {
+      const wholePart = Math.floor(numerator / denominator);
+      const newNumerator = numerator % denominator;
+      return wholePart > 0
+        ? `${wholePart} ${newNumerator}/${denominator}`
+        : `${newNumerator}/${denominator}`;
+    }
+
+    function formatFraction(num, den) {
+      return `<math xmlns="http://www.w3.org/1998/Math/MathML">
+                <mfrac>
+                  <mrow><mn>${num}</mn></mrow>
+                  <mrow><mn>${den}</mn></mrow>
+                </mfrac>
+              </math>`;
+    }
+
+    function formatMixedNumber(whole, numerator, denominator) {
+      return `
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <mrow>
+            <mn>${whole}</mn>
+            <mfrac>
+              <mrow><mn>${numerator}</mn></mrow>
+              <mrow><mn>${denominator}</mn></mrow>
+            </mfrac>
+          </mrow>
+        </math>`;
+    }
+
+    function generateQuestion() {
+      answered = false;
+
+      // Генерация случайных чисел
+      num1 = getRandomInteger(1, 10);
+      den1 = getRandomInteger(1, 10);
+      num2 = getRandomInteger(1, 10);
+      den2 = getRandomInteger(1, 10);
+
+      const operations = ["+", "-", "*", "/"];
+      currentOperation = operations[Math.floor(Math.random() * operations.length)];
+
+      let resultNum, resultDen;
+
+      // Случайная генерация смешанных чисел
+      const isMixed1 = Math.random() < 0.5;
+      const isMixed2 = Math.random() < 0.5;
+
+      // Генерация чисел для смешанных дробей
+      if (isMixed1) {
+        num1 = getRandomInteger(2, 10) * den1 + getRandomInteger(1, den1 - 1); // Смешанное число
+      }
+
+      if (isMixed2) {
+        num2 = getRandomInteger(2, 10) * den2 + getRandomInteger(1, den2 - 1); // Смешанное число
+      }
+
+      switch (currentOperation) {
+        case "+":
+          resultNum = num1 * den2 + num2 * den1;
+          resultDen = den1 * den2;
+          document.getElementById("theoryText").innerText = "Сложение дробей: приведите дроби к общему знаменателю и сложите числители.";
+          break;
+        case "-":
+          resultNum = num1 * den2 - num2 * den1;
+          resultDen = den1 * den2;
+          document.getElementById("theoryText").innerText = "Вычитание дробей: приведите дроби к общему знаменателю и вычтите числители.";
+          break;
+        case "*":
+          resultNum = num1 * num2;
+          resultDen = den1 * den2;
+          document.getElementById("theoryText").innerText = "Умножение дробей: умножьте числители и знаменатели.";
+          break;
+        case "/":
+          resultNum = num1 * den2;
+          resultDen = den1 * num2;
+          document.getElementById("theoryText").innerText = "Деление дробей: умножьте первую дробь на обратную вторую дробь.";
+          break;
+      }
+
+      [resultNum, resultDen] = simplifyFraction(resultNum, resultDen);
+      correctAnswer = fractionToMixed(resultNum, resultDen);
+
+      // Форматирование отображения вопросов с возможными смешанными числами
+      let questionText = `${formatFraction(num1, den1)} ${currentOperation} ${formatFraction(num2, den2)} = ?`;
+
+      if (isMixed1) {
+        questionText = `${formatMixedNumber(Math.floor(num1 / den1), num1 % den1, den1)} ${currentOperation} ${formatFraction(num2, den2)} = ?`;
+      }
+      if (isMixed2) {
+        questionText = `${formatFraction(num1, den1)} ${currentOperation} ${formatMixedNumber(Math.floor(num2 / den2), num2 % den2, den2)} = ?`;
+      }
+
+      document.getElementById("question").innerHTML = questionText;
+      document.getElementById("resultMessage").innerText = "";
+    }
+
+    function checkAnswer() {
+      const userWhole = parseInt(document.getElementById("wholeInput").value.trim()) || 0;
+      const userNumerator = parseInt(document.getElementById("numeratorInput").value.trim());
+      const userDenominator = parseInt(document.getElementById("denominatorInput").value.trim());
+      const resultMessage = document.getElementById("resultMessage");
+
+      let userAnswer = `${userWhole} ${userNumerator}/${userDenominator}`;
+
+      if (`${userAnswer}` === correctAnswer && !answered) {
+        resultMessage.innerText = "Правильно!";
+        resultMessage.className = "text-success";
+        score += 1;
+        answered = true;
+      } else {
+        resultMessage.innerText = "Неправильно, попробуйте ещё раз.";
+        resultMessage.className = "text-danger";
+      }
+
+      document.getElementById("score").innerText = score;
+    }
+
+    generateQuestion();
+  </script>
+</body>
+</html>
+
